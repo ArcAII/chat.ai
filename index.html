@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gemini Chatbot</title>
+  <style>
+    /* Add your CSS styling here */
+  </style>
+</head>
+<body>
+  <div id="chat-container">
+    <div id="chat-messages"></div>
+    <input type="text" id="user-input" placeholder="Type your message...">
+    <button onclick="sendMessage()">Send</button>
+  </div>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "@google/generative-ai": "https://esm.run/@google/generative-ai"
+      }
+    }
+  </script>
+  <script src="config.js"></script> <!-- Load the API key -->
+  <script type="module">
+    import { GoogleGenerativeAI } from "@google/generative-ai";
+
+    // Use the API_KEY from the config.js file
+    const genAI = new GoogleGenerativeAI(API_KEY);
+
+    // Initialize the model
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
+    // Function to send a message to the model and display the response
+    window.sendMessage = async function() {
+      const userInput = document.getElementById("user-input").value;
+      addMessage("user", userInput); // Add user message to chat window
+      const result = await model.generateContent(userInput);
+      const response = await result.response;
+      const text = await response.text();
+      addMessage("model", text); // Add model response to chat window
+    }
+
+    // Function to add a message to the chat window
+    function addMessage(role, text) {
+      const chatMessages = document.getElementById("chat-messages");
+      const messageDiv = document.createElement("div");
+      messageDiv.className = role;
+      messageDiv.innerText = text;
+      chatMessages.appendChild(messageDiv);
+    }
+  </script>
+</body>
+</html>
